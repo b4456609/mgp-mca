@@ -53,7 +53,7 @@ public class ProjectReader {
         List<ClientCaller> client = sourceAnalyzer.getClient();
         List<ServiceCall> serviceCalls = client.stream().map(clientCaller -> {
             ClientInfo clientInfo = clientCaller.getClientInfo();
-            String id = idFactory.getServiceCallerId(serviceName, clientInfo.getPath(), clientInfo.getHttpMethod());
+            String id = idFactory.getServiceCallerId(clientInfo.getTarget(), clientInfo.getPath(), clientInfo.getHttpMethod());
             return new ServiceCall(id, clientInfo.getPath(), clientInfo.getHttpMethod(), clientInfo.getTarget());
         }).collect(Collectors.toList());
 
