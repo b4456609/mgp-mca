@@ -14,14 +14,12 @@ import soselab.easylearn.MCA.parser.model.ClientCaller;
 import soselab.easylearn.MCA.parser.model.ClientInfo;
 import soselab.easylearn.MCA.parser.model.ServiceEndpoint;
 
-import java.io.FileReader;
-import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * Created by bernie on 1/9/17.
- */
 public class ProjectReader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProjectReader.class);
@@ -54,7 +52,7 @@ public class ProjectReader {
         List<ServiceCall> serviceCalls = client.stream().map(clientCaller -> {
             ClientInfo clientInfo = clientCaller.getClientInfo();
             String id = idFactory.getServiceCallerId(clientInfo.getTarget(), clientInfo.getPath(), clientInfo.getHttpMethod());
-            return new ServiceCall(id, clientInfo.getPath(), clientInfo.getHttpMethod(), clientInfo.getTarget());
+            return new ServiceCall(id, clientInfo.getPath(), clientInfo.getHttpMethod(), clientInfo.getTarget(), false);
         }).collect(Collectors.toList());
 
         List<ServiceEndpoint> serviceEndpoints = endpointParser.getMappings(mappingJson);
@@ -86,6 +84,12 @@ public class ProjectReader {
             System.out.println(codeSnippet);
             fileOutput.writeFile(clientInfo.getMethod().getName() + ".txt", codeSnippet);
             LOGGER.info(codeSnippet);
+        });
+
+        //mark the untest service call
+        serviceCalls.parallelStream().forEach(serviceCall -> {
+            if (unTestClients.contains(serviceCall))
+                serviceCall.setUnTest(true);
         });
 
         //MDP write
