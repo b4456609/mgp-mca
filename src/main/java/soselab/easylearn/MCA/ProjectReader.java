@@ -88,8 +88,13 @@ public class ProjectReader {
 
         //mark the untest service call
         serviceCalls.parallelStream().forEach(serviceCall -> {
-            if (unTestClients.contains(serviceCall))
-                serviceCall.setUnTest(true);
+            unTestClients.forEach(unTestClient -> {
+                if (unTestClient.getClientInfo().getHttpMethod().equals(serviceCall.getMethod()) &&
+                        unTestClient.getClientInfo().getPath().equals(serviceCall.getPath()) &&
+                        unTestClient.getClientInfo().getTarget().equals(serviceCall.getProvider())) {
+                    serviceCall.setUnTest(true);
+                }
+            });
         });
 
         //MDP write
